@@ -46,19 +46,20 @@ import Shorts from '../Components/Images/shopping-8.png';
 import Signin from './Signin';
 import Signup from './Signup';
 import CartDialog from '../Components/CartDialog';
+// import CheckOutDialog from '../Components/CheckOutDialog';
 
 
 const drawerWidth = 240;
 
 
 
-const products = [{ name: "Levi's Shirt", image: ShirtImage, price: "1499",category: "Men's Clothing"},
-{ name: "iPhone SE", image: iPhone, price: "36999",category: "Electronics" },
-{ name: "Fossil Watch", image: Watch, price: "9999",category: "Men's Accessories" },
-{ name: "HP Notebook PC", image: Laptop, price: "59999",category: "Electronics" },
-{ name: "Marks Trouser", image: Trousers, price: "1299",category: "Men's Clothing" },
-{ name: "Woodland Shoes", image: Shoes, price: "2999",category: "Men's Footwear" },
-{ name: "Short", image: Shorts, price: "599",category: "Men's Clothing" }]
+const products = [{ name: "Levi's Shirt", image: ShirtImage, price: "1499", category: "Men's Clothing" },
+{ name: "iPhone SE", image: iPhone, price: "36999", category: "Electronics" },
+{ name: "Fossil Watch", image: Watch, price: "9999", category: "Men's Accessories" },
+{ name: "HP Notebook PC", image: Laptop, price: "59999", category: "Electronics" },
+{ name: "Marks Trouser", image: Trousers, price: "1299", category: "Men's Clothing" },
+{ name: "Woodland Shoes", image: Shoes, price: "2999", category: "Men's Footwear" },
+{ name: "Short", image: Shorts, price: "599", category: "Men's Clothing" }]
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -171,45 +172,108 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserHome({history}) {
+export default function UserHome({ history }) {
   const token = localStorage.getItem('token');
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [signinOpen,setSigninOpen] = React.useState(false);
-  const [signupOpen,setSignupOpen] = React.useState(false);
-  const [cartDialogOpen,setCartDialogOpen] = React.useState(false);
-  const [loggedin,setLoggedin] = React.useState(false);
+  const [signinOpen, setSigninOpen] = React.useState(false);
+  const [signupOpen, setSignupOpen] = React.useState(false);
+  const [cartDialogOpen, setCartDialogOpen] = React.useState(false);
+  // const 
+  const [loggedin, setLoggedin] = React.useState(false);
   // const [userType,setUserType] = React.useState('customer');
-  const [user,setUser] = React.useState({});
-  const [cart,setCart] = React.useState([]);
+  const [user, setUser] = React.useState({});
+  const [cart, setCart] = React.useState([]);
+  const [selectedCategory,setSelectedCategory] = React.useState('AllProducts');
+  const [sortedProducts,setSortedProducts] = React.useState([]);
+  const [products, setProducts] = React.useState([{ name: "product1", image: ShirtImage, price: "1499", category: "Mensclothing" },
+  { name: "product2", image: iPhone, price: "36999", category: "Electronics" },
+  { name: "product3", image: Watch, price: "9999", category: "MensAccessories" },
+  { name: "product4", image: Laptop, price: "59999", category: "Electronics" },
+  { name: "product5", image: Trousers, price: "1299", category: "MensClothing" },
+  { name: "product6", image: Shoes, price: "2999", category: "MensFootwear" },
+  { name: "product7", image: Shorts, price: "599", category: "MensClothing" }]);
 
   React.useEffect(()=>{
-    if(token){
+    setSortedProducts(products)
+  },[products])
+
+  const [selections, setCollections] = React.useState({
+    AllProducts: true,
+    Mensclothing: false,
+    MensAccessories: false,
+    Electronics: false,
+    MensFootwear: false,
+    WomensFootwear: false,
+    WomensClothing: false,
+    WomensAccessories: false,
+    KidsWear: false
+  })
+  const { AllProducts, Mensclothing, MensAccessories,
+    Electronics, MensFootwear, WomensFootwear, WomensClothing,
+    WomensAccessories, KidsWear } = selections;
+
+  const handleCategoryClick = (cat) => () => {
+    setSelectedCategory(cat);
+    if(cat == "AllProducts"){
+      setSortedProducts(products);
+    }
+    else{
+      const sp = products.filter((p)=>{return p.category == cat});
+      setSortedProducts(sp);
+    }
+    
+    setCollections({...selections,[cat]: true,[selectedCategory]: false})
+  }
+
+  React.useEffect(() => {
+    if (token) {
       setLoggedin(true);
     }
-    fetch(process.env.REACT_APP_API_URL+'/api/me', {
+    fetch(process.env.REACT_APP_API_URL + '/api/me', {
       headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       method: 'GET'
-  }).then(result=>{
-    if(result.status === 200){
-      result.json().then(value=>{
-        console.log(value);
-        setUser(value);
-        if(value.user_type === "admin"){
-          history.push('/admin')
-        }
-      })
-    }
-  })
-  },[token])
-  
+    }).then(result => {
+      if (result.status === 200) {
+        result.json().then(value => {
+          console.log(value);
+          setUser(value);
+          if (value.user_type === "admin") {
+            history.push('/admin')
+          }
+        })
+      }
+    })
+  }, [token])
+
+
+  React.useEffect(() => {
+    fetch(process.env.REACT_APP_API_URL + '/api/get_all_products', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      method: 'GET'
+    }).then(result => {
+      if (result.status === 200) {
+        result.json().then(value => {
+          console.log(value);
+          value.forEach(v => {
+            setProducts(products => [...products, v])
+          });
+
+        })
+      }
+    })
+  }, [])
+
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -231,24 +295,24 @@ export default function UserHome({history}) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleLogout = ()=>{
-    fetch(process.env.REACT_APP_API_URL+'/api/logout', {
+  const handleLogout = () => {
+    fetch(process.env.REACT_APP_API_URL + '/api/logout', {
       headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       method: 'GET'
-  }).then(result=>{
-    if(result.status === 200){
-      result.json().then(value=>{
-        console.log(value);
-        setLoggedin(false);
-        localStorage.removeItem('token');
-        setUser({});
-      })
-    }
-  })
+    }).then(result => {
+      if (result.status === 200) {
+        result.json().then(value => {
+          console.log(value);
+          setLoggedin(false);
+          localStorage.removeItem('token');
+          setUser({});
+        })
+      }
+    })
   }
 
   const menuId = 'primary-search-account-menu';
@@ -315,15 +379,15 @@ export default function UserHome({history}) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const handleSignin = () =>{
+  const handleSignin = () => {
     setSigninOpen(true)
   }
 
-  const handleSignup = () =>{
+  const handleSignup = () => {
     setSignupOpen(true)
   }
 
-  const handleCartClick = () => {
+  const handleCartClick = () => {
     setCartDialogOpen(true);
   }
 
@@ -398,7 +462,7 @@ export default function UserHome({history}) {
             </IconButton>
           </div>}
           {!loggedin && <Button onClick={handleSignin}>Signin</Button>}
-         {!loggedin && <Button onClick={handleSignup}>Signup</Button>}
+          {!loggedin && <Button onClick={handleSignup}>Signup</Button>}
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
@@ -423,43 +487,43 @@ export default function UserHome({history}) {
         </div>
         <Divider />
         <List>
-          <ListItem button selected>
+          <ListItem onClick={handleCategoryClick('AllProducts')} button selected={AllProducts} >
             <ListItemIcon><DashboardIcon></DashboardIcon></ListItemIcon>
             <ListItemText primary='All Products' />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('Mensclothing')} button selected={Mensclothing}>
             <ListItemIcon><WcIcon></WcIcon></ListItemIcon>
             <ListItemText primary="Men's clothing" />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('MensFootwear')} button selected={MensFootwear}>
             <ListItemIcon><AirlineSeatLegroomNormalIcon></AirlineSeatLegroomNormalIcon></ListItemIcon>
             <ListItemText primary="Men's Footwear" />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('MensAccessories')} button selected={MensAccessories}>
             <ListItemIcon><SettingsIcon></SettingsIcon></ListItemIcon>
             <ListItemText primary="Men's Accessories " />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('Electronics')} button selected={Electronics}>
             <ListItemIcon><DevicesIcon></DevicesIcon></ListItemIcon>
             <ListItemText primary='Electronics' />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('KidsWear')} button selected={KidsWear}>
             <ListItemIcon><ChildCareIcon></ChildCareIcon></ListItemIcon>
             <ListItemText primary='Kids Wear' />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('WomensClothing')} button selected={WomensClothing}>
             <ListItemIcon><WcIcon></WcIcon></ListItemIcon>
             <ListItemText primary="Women's Clothing" />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('WomensFootwear')} button selected={WomensFootwear}>
             <ListItemIcon><AirlineSeatLegroomNormalIcon></AirlineSeatLegroomNormalIcon></ListItemIcon>
             <ListItemText primary="Women's Footwear" />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('WomensAccessories')} button selection={WomensAccessories}>
             <ListItemIcon><SettingsIcon></SettingsIcon></ListItemIcon>
-            <ListItemText primary="Women's Accessories " />
+            <ListItemText primary="Women's Accessories" />
           </ListItem>
-          <ListItem button>
+          <ListItem onClick={handleCategoryClick('Others')} button>
             <ListItemIcon><More2Icon></More2Icon></ListItemIcon>
             <ListItemText primary="Others" />
           </ListItem>
@@ -472,13 +536,16 @@ export default function UserHome({history}) {
         {/* <AdminDashboard></AdminDashboard> */}
         <Grid container component="main" alignItems="center">
           {
-            products.map((item, index) => {
+            sortedProducts.map((item, index) => {
               return (
                 <Grid item xs={12} sm={6} md={4} lg={3} >
-                  <ItemCard item = {item}></ItemCard>
+                  <ItemCard item={item}></ItemCard>
                 </Grid>
               )
             })
+          }
+          {
+            sortedProducts.length === 0 && <Typography>No Products</Typography>
           }
 
         </Grid>
@@ -489,26 +556,3 @@ export default function UserHome({history}) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

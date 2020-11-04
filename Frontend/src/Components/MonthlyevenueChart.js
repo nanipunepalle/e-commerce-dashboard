@@ -50,16 +50,22 @@ export default function Chart() {
         fileteredData.push(d);
       }
       if (index === array.length - 1) {
-        setMonthlyOrdersCount(fileteredData.length)
+        // setMonthlyOrdersCount(fileteredData.length)
         var res = fileteredData.reduce(function (obj, v) {
-          obj[v.time] = (obj[v.time] || 0) + 1;
+            // console.log(obj)
+          obj[v.time] = (obj[v.time] || 0) + v.price;
+          
           return obj;
         }, {})
-        const aray = []
+        const aray = [];
+        // console.log(res);
+        var count = 0;
         const keys = Object.keys(res);
         keys.forEach((k, i, a) => {
+          count = count + res[k];
           aray.push(createData(k, res[k]))
           if (i == a.length - 1) {
+            setMonthlyOrdersCount(count)
             setData(data => data.concat(aray))
           }
         })
@@ -83,7 +89,7 @@ export default function Chart() {
       </Grid>
     </Grid> */}
       <Typography component="h2" variant="h6" color="primary" gutterBottom>
-       2020 Monthly Orders({monthlyOrdersCount})
+       2020 Monthly Revenue({monthlyOrdersCount})
       </Typography>
       <div>
       <FormControl >
@@ -131,7 +137,7 @@ export default function Chart() {
               position="left"
               style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
             >
-              Orders
+              Revenue
             </Label>
           </YAxis>
           <Line type="monotone" dataKey="products" stroke={theme.palette.primary.main} dot={false} />
@@ -141,7 +147,7 @@ export default function Chart() {
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
-            <TableCell>Total Orders</TableCell>
+            <TableCell>Total Revenue</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

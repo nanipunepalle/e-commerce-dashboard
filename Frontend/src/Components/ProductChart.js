@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Typography from '@material-ui/core/Typography';
-import { TextField } from '@material-ui/core';
+// import { TextField } from '@material-ui/core';
 import { AllOrders } from '../Components/AllOrdersArray';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -12,7 +12,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-// import Typography from '@material-ui/core/Typography';
 
 
 function createData(time, products) {
@@ -31,12 +30,11 @@ function createData(time, products) {
 
 export default function Chart() {
   const theme = useTheme();
-  const [selectedMonth, setSelectedMonth] = React.useState(0);
+  const [selectedProduct, setSelectedProduct] = React.useState('product1');
   const [fileteredData, setFilteredData] = React.useState([]);
   const [data, setData] = React.useState([]);
-  const [monthlyOrdersCount,setMonthlyOrdersCount] = React.useState(0);
-
-
+  const [productCount, setProductCount] = React.useState(0);
+  const products = ['product1', 'product2', 'product3', 'product4'];
 
   React.useEffect(() => {
     AllOrders.sort((a, b) => {
@@ -45,80 +43,72 @@ export default function Chart() {
     setData([]);
     setFilteredData([]);
     AllOrders.forEach((d, index, array) => {
-      const da = new Date(d.time);
-      if (da.getMonth() == selectedMonth) {
+
+      if (d.product_name === selectedProduct) {
         fileteredData.push(d);
       }
+
       if (index === array.length - 1) {
-        setMonthlyOrdersCount(fileteredData.length)
+        setProductCount(fileteredData.length)
         var res = fileteredData.reduce(function (obj, v) {
           obj[v.time] = (obj[v.time] || 0) + 1;
           return obj;
         }, {})
-        const aray = []
+
+        const aray = [];
         const keys = Object.keys(res);
+
         keys.forEach((k, i, a) => {
           aray.push(createData(k, res[k]))
-          if (i == a.length - 1) {
+          if (i === a.length - 1) {
             setData(data => data.concat(aray))
           }
         })
       }
     })
-  }, [AllOrders, selectedMonth])
+  }, [selectedProduct, AllOrders])
 
 
 
   const handleMonthChange = (event) => {
     console.log(event.target.value);
     setData([]);
-    setSelectedMonth(event.target.value);
+    setSelectedProduct(event.target.value);
   }
+
 
   return (
     <React.Fragment>
-    {/* <Grid>
-      <Grid>
-        
-      </Grid>
-    </Grid> */}
       <Typography component="h2" variant="h6" color="primary" gutterBottom>
-       2020 Monthly Orders({monthlyOrdersCount})
+        2020 Product Orders({productCount})
       </Typography>
       <div>
-      <FormControl >
-        <InputLabel htmlFor="month">Month</InputLabel>
-        <Select
-          onChange={handleMonthChange}
-          native
-          style={{ width: "200px" }}
-          label="Selet Month"
-          inputProps={{
-            name: 'month',
-            id: 'month',
-          }}
-        >
-          <option value={0}>January</option>
-          <option value={1}>February</option>
-          <option value={2}>March</option>
-          <option value={3}>April</option>
-          <option value={4}>May</option>
-          <option value={5}>June</option>
-          <option value={6}>July</option>
-          <option value={7}>August</option>
-          <option value={8}>September</option>
-          <option value={9}>October</option>
-          <option value={10}>November</option>
-          <option value={11}>December</option>
-        </Select>
-      </FormControl>
+        <FormControl >
+          <InputLabel htmlFor="month">Month</InputLabel>
+          <Select
+            onChange={handleMonthChange}
+            native
+            style={{ width: "200px" }}
+            label="Selet Month"
+            inputProps={{
+              name: 'month',
+              id: 'month',
+            }}
+          >
+            {
+              products.map((prod, index) => {
+                return <option value={prod}>{prod}</option>
+              })
+            }
+          </Select>
+        </FormControl>
       </div>
-      
+      {data.length == 0 && <Typography>No orders</Typography>}
       <ResponsiveContainer>
         <LineChart
           data={data}
           margin={{
-            top: 30,
+            top: 16,
             right: 16,
             bottom: 0,
             left: 24,

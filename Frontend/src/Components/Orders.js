@@ -7,18 +7,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { AllOrders } from './AllOrdersArray';
 
-function createData(id, date,productName, name, shipTo, paymentMethod, amount) {
-  return { id, date,productName, name, shipTo, paymentMethod, amount };
-}
+// function createData(id, date, productName, name, shipTo, paymentMethod, amount) {
+//   return { id, date, productName, name, shipTo, paymentMethod, amount };
+// }
 
-const rows = [
-  createData(0, '21 Sep,2020','Levis Shirt', 'Varun', 'Hyderabad,TS'),
-  createData(1, '21 Sep,2020','Trousers', 'Suhaas', 'Kurnool,AP'),
-  createData(2, '21 Sep,2020','Levis Shirt', 'Lalith', 'Chittoor,AP'),
-  createData(3, '21 Sep,2020','Shorts', 'Pranay', 'Vellore,TN'),
-  createData(4, '21 Sep,2020','Levis Shirt', 'Rithvik', 'Hyderabad,TS'),
-];
+// const rows = [];
 
 function preventDefault(event) {
   event.preventDefault();
@@ -32,10 +27,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Orders() {
   const classes = useStyles();
+  const [orders, setOrders] = React.useState([]);
+  React.useEffect(() => {
+    // AllOrders.reverse();
+    
+   
+  const newArray = AllOrders.sort((a, b) => {
+    return new Date(a.time) - new Date(b.time);
+  }).reverse()
+    setOrders(newArray)
+  }, [])
+
   return (
     <React.Fragment>
-     <Typography component="h2" variant="h6" color="primary" gutterBottom>
-          Recent Orders
+      <Typography component="h2" variant="h6" color="primary" gutterBottom>
+        Recent Orders
       </Typography>
       <Table size="small">
         <TableHead>
@@ -47,12 +53,12 @@ export default function Orders() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {orders.slice(0, 7).map((row, index) => (
             <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.productName}</TableCell>
+              <TableCell>{row.time}</TableCell>
+              <TableCell>{row.product_name}</TableCell>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
+              <TableCell>{row.address}</TableCell>
             </TableRow>
           ))}
         </TableBody>

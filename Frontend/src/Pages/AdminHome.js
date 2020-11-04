@@ -148,10 +148,10 @@ export default function AdminHome() {
   const [yourProductsSelected,setYourProductsSelcted] = React.useState(false);
   const [addProductsSelected,setAddProductsSelected] = React.useState(false);
   const [settingsSelected,setSettingsSelected] = React.useState(false);
-  const [products,setProducts] = React.useState([{ name: "Levi's Shirt", image: ShirtImage, price: "1499",category: "Men's Clothing"},
-  { name: "Marks Trouser", image: Trousers, price: "1299",category: "Men's Clothing" },
-  { name: "Woodland Shoes", image: Shoes, price: "2999",category: "Men's Footwear" },
-  { name: "Short", image: Shorts, price: "599",category: "Men's Clothing" }])
+  const [products,setProducts] = React.useState([{ name: "product1", image: ShirtImage, price: "1999",actual_price:'3999',category: "Men's Clothing"},
+  { name: "product2", image: Trousers,actual_price:'1699', price: "699",category: "Men's Clothing" },
+  { name: "product3", image: Shoes,actual_price:'2999', price: "1699",category: "Men's Footwear" },
+  { name: "product4", image: Shorts,actual_price:'999', price: "399",category: "Men's Clothing" }])
 
   React.useEffect(()=>{
     fetch(process.env.REACT_APP_API_URL+'/api/get_product', {
@@ -172,7 +172,7 @@ export default function AdminHome() {
       })
     }
   })
-  },[])
+  },[token])
 
   const handleDrawerOpen = () => {
     setOpen(true);

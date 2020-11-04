@@ -42,6 +42,9 @@ export default function AdminItemCard(props) {
                     <Typography gutterBottom variant="h5" component="h2">
                         {item.name}
                     </Typography>
+                    <Typography style={{textDecoration:'line-through'}} variant="body1">
+                        {"Rs "+item.actual_price}
+                    </Typography>
                     <Typography variant="body1">
                         {"Rs "+item.price}
                     </Typography>

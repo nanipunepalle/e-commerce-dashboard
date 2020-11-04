@@ -5,14 +5,15 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Grid from '@material-ui/core/Grid';
+import { get_cart_products } from './CartProducts';
 
-const products = [
-  { name: 'Product 1', desc: 'A nice thing', price: 'Rs 999' },
-  { name: 'Product 2', desc: 'Another thing', price: 'Rs 1999' },
-  { name: 'Product 3', desc: 'Something else', price: 'Rs 1499' },
-  { name: 'Product 4', desc: 'Best thing of all', price: 'Rs 799' },
-  { name: 'Shipping', desc: '', price: 'Free' },
-];
+// const products = [
+//   { name: 'Product 1', desc: 'A nice thing', price: 'Rs 999' },
+//   { name: 'Product 2', desc: 'Another thing', price: 'Rs 1999' },
+//   { name: 'Product 3', desc: 'Something else', price: 'Rs 1499' },
+//   { name: 'Product 4', desc: 'Best thing of all', price: 'Rs 799' },
+//   { name: 'Shipping', desc: '', price: 'Free' },
+// ];
 const addresses = ['Kattamanchi', 'Chittoor', 'Andhra Pradesh', '517001', 'India'];
 const payments = [
   { name: 'Card type', detail: 'Master' },
@@ -35,6 +36,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Review() {
   const classes = useStyles();
+  const [totalPrice, setTotalPrice] = React.useState(0);
+  React.useEffect(() => {
+    get_cart_products.forEach((p) => {
+      // totalPrice = totalPrice + parseInt(p.price)
+      setTotalPrice(totalPrice => totalPrice + parseInt(p.price))
+    })
+  }, [])
 
   return (
     <React.Fragment>
@@ -42,7 +50,7 @@ export default function Review() {
         Order summary
       </Typography>
       <List disablePadding>
-        {products.map((product) => (
+        {get_cart_products.map((product) => (
           <ListItem className={classes.listItem} key={product.name}>
             <ListItemText primary={product.name} secondary={product.desc} />
             <Typography variant="body2">{product.price}</Typography>
@@ -51,7 +59,7 @@ export default function Review() {
         <ListItem className={classes.listItem}>
           <ListItemText primary="Total" />
           <Typography variant="subtitle1" className={classes.total}>
-            Rs 5000
+            Rs {totalPrice}
           </Typography>
         </ListItem>
       </List>
@@ -60,7 +68,7 @@ export default function Review() {
           <Typography variant="h6" gutterBottom className={classes.title}>
             Shipping
           </Typography>
-          <Typography gutterBottom>John Smith</Typography>
+          <Typography gutterBottom>Lalith</Typography>
           <Typography gutterBottom>{addresses.join(', ')}</Typography>
         </Grid>
         <Grid item container direction="column" xs={12} sm={6}>

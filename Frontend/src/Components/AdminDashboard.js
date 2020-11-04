@@ -6,8 +6,11 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Chart from './Chart';
-import Deposits from './TotalOrders';
+import TotalOrders from './TotalOrders';
 import Orders from './Orders';
+import ProductChart from './ProductChart';
+import MonthlyRevenuehart from './MonthlyevenueChart';
+import ProductRevenueChart from './ProductRevenueChart';
 
 
 
@@ -31,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 240,
+    height: 380,
   },
 }));
 
@@ -52,12 +55,27 @@ export default function AdminsDashboard() {
             </Grid>
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                <Deposits />
+                <TotalOrders />
               </Paper>
             </Grid>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <Orders />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+            <Paper className={fixedHeightPaper}>
+                <ProductChart></ProductChart>
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+            <Paper className={fixedHeightPaper}>
+                <MonthlyRevenuehart></MonthlyRevenuehart>
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+            <Paper className={fixedHeightPaper}>
+                <ProductRevenueChart></ProductRevenueChart>
               </Paper>
             </Grid>
           </Grid>

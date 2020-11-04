@@ -43,36 +43,56 @@ const useStyles = makeStyles((theme) => ({
 export default function Signup(props) {
     const classes = useStyles();
     const token = localStorage.getItem('token');
-    
+    const SubCategories = {
+        "Men's clothing": ['Shirts', 'Trousers', 'T Shirts', 'Shorts', 'Blazers', 'Jeans'],
+        "Electronics": ['Smart Phones', 'Laptops', 'Televisions', 'Washing Machines', 'Refrigerators', 'Mobile Accessories', 'Storage Devices'],
+        "Men's Footwear": ['Casual Shoes', 'Sandals', 'Sneakers', 'Loafers', 'Slippers', 'Sports Shoes'],
+        "Women's Footwear": ['Casual Shoes', 'Sandals', 'Sneakers', 'Loafers', 'Slippers', 'Sports Shoes'],
+        "Women's Clothing": ['Shirts', 'Trousers', 'T Shirts', 'Shorts', 'Blazers', 'Jeans','Saree'],
+        "Men's Accessories": ['Perfumes','Shades','Watches','Cap','Glasses','Belts','Creams'],
+        "Women's Accessories": ['Perfumes','Shades','Watches','Cap','Glasses','Belts','Creams','lipStick'],
+        "Kid's Wear": ['Shirts', 'Trousers', 'T Shirts', 'Shorts', 'Blazers', 'Jeans'],
+        "Others": []
+
+
+    };
+    const [subCategories, setSubCategories] = React.useState([]);
+
 
     const handlesignup = (e) => {
         e.preventDefault();
-        const {name,category,price,quantity} = e.target.elements;
+        const { name, category, price, quantity } = e.target.elements;
         // console.log(fullName.value+email.value+phno.value+password.value+type.value)
         var data = new FormData()
         const payload = {
-          name: name.value,
-          category: category.value,
-          price: price.value,
-          quantity_available: quantity.value,
+            name: name.value,
+            category: category.value,
+            price: price.value,
+            quantity_available: quantity.value,
         };
         data = JSON.stringify(payload);
-        fetch(process.env.REACT_APP_API_URL+ '/api/add_product', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          method: 'POST',
-          body: data
-        }).then((result)=>{
-            if(result.status === 200){
-                result.json().then(value=>{
+        fetch(process.env.REACT_APP_API_URL + '/api/add_product', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            method: 'POST',
+            body: data
+        }).then((result) => {
+            if (result.status === 200) {
+                result.json().then(value => {
                     console.log(value);
+                    window.location.reload(false);
                 })
             }
         })
-    
+
+    }
+
+    const handleSubCategoriesChange = (e) => {
+        console.log(e.target.value);
+        setSubCategories(SubCategories[e.target.value])
     }
 
     return (
@@ -82,7 +102,7 @@ export default function Signup(props) {
                     <LockOutlinedIcon />
                 </Avatar> */}
                 <Typography component="h1" variant="h5">
-                   Add Product
+                    Add Product
                         </Typography>
                 <form className={classes.form} onSubmit={handlesignup}>
                     <Grid container spacing={2}>
@@ -114,8 +134,19 @@ export default function Signup(props) {
                                 variant="outlined"
                                 required
                                 fullWidth
+                                name="actualprice"
+                                label="Actual Price"
+                                id="actualprice"
+                                autoComplete="off"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
                                 name="price"
-                                label="Price"
+                                label="Discounted Price"
                                 id="price"
                                 autoComplete="off"
                             />
@@ -126,6 +157,7 @@ export default function Signup(props) {
                                 <Select
                                     fullWidth
                                     native
+                                    onChange={handleSubCategoriesChange}
                                     label="Category"
                                     inputProps={{
                                         name: 'category',
@@ -145,6 +177,27 @@ export default function Signup(props) {
                                 </Select>
                             </FormControl>
                         </Grid>
+                        {subCategories.length !== 0 && <Grid item xs={12}>
+                            <FormControl variant="outlined" fullWidth required>
+                                <InputLabel htmlFor="outlined-age-native-simple">Sub-Category</InputLabel>
+                                <Select
+                                    fullWidth
+                                    native
+                                    // onChange={handleSubCategoriesChange}
+                                    label="Sub-Category"
+                                    inputProps={{
+                                        name: 'subcategory',
+                                        id: 'outlin',
+                                    }}
+                                >
+                                    <option aria-label="None" value="" />
+                                    {subCategories.map((s, i) => {
+                                        return <option value={s}>{s}</option>
+                                    })}
+                                    <option value="Others">Others</option>
+                                </Select>
+                            </FormControl>
+                        </Grid>}
                     </Grid>
                     <Button
                         type="submit"
